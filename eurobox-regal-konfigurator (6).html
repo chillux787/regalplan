@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eurobox-Regal Konfigurator</title>
+<style>
+:root{
+  --green:#3f6b2a; --green-d:#2e5120; --green-l:#e8f0e1;
+  --bg:#f6f3ec; --card:#fff; --line:#e2dccd;
+  --ink:#25302a; --mut:#6b7468; --bad:#c0392b; --warn:#a8680f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header.top{background:var(--green-d);color:#fff;padding:14px 24px}
+header.top h1{margin:0;font-size:20px;font-weight:650;letter-spacing:.2px}
+header.top p{margin:2px 0 0;opacity:.8;font-size:13px}
+main{max-width:1280px;margin:0 auto;padding:22px 20px 60px;display:grid;gap:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.card h2{margin:0 0 12px;font-size:17px}
+.top-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:980px){.top-grid{grid-template-columns:1fr}}
+.preview svg{width:100%;height:auto;max-height:640px;display:block}
+.preview .sub{display:grid;grid-template-columns:1fr;gap:6px;margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.preview .sub h3{margin:0;font-size:13px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.preview .sub svg{max-height:230px}
+.fach{fill:#fbf7ee;cursor:pointer}
+.fach:hover{fill:#f2e7cc}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{background:var(--green-l);border-radius:10px;padding:7px 11px;font-size:13px;line-height:1.2}
+.chip b{display:block;font-size:17px;color:var(--green-d)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+button{font:inherit;cursor:pointer}
+.btn{background:#fff;border:1px solid var(--green);color:var(--green-d);border-radius:9px;padding:7px 12px;font-weight:600}
+.btn:hover{background:var(--green-l)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.ib{background:#f3efe4;border:1px solid var(--line);border-radius:7px;width:28px;height:26px;padding:0;line-height:1}
+.ib:hover{background:var(--green-l)}
+.ib.del:hover{background:#f9dcd8}
+.all{border:0;background:none;color:var(--green);padding:2px 0 0;font-size:11px;text-decoration:underline;display:block}
+.all:hover{color:var(--green-d)}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:6px}
+input[type=number],select{width:100%;font:inherit;font-size:14px;color:var(--ink);padding:6px 8px;border:1px solid #cfc8b5;border-radius:8px;background:#fff;margin-top:2px}
+input[type=number]:focus,select:focus{outline:2px solid #9bbf86;border-color:var(--green)}
+input.bad{border-color:var(--bad);background:#fdeeed}
+input:disabled{background:#f1eee6;color:#999}
+label.chk{display:flex;align-items:center;gap:7px;color:var(--ink);font-size:13px}
+label.chk input{margin:0}
+details{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:12px}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:10px}
+.set-grid .full{grid-column:1/-1}
+.set-grid h4{grid-column:1/-1;margin:10px 0 0;font-size:13px;color:var(--green-d);border-bottom:1px solid var(--line);padding-bottom:3px}
+.warns{display:grid;gap:6px;margin-top:6px}
+.w{padding:7px 10px;border-radius:8px;font-size:13px}
+.w.bad{background:#fdeeed;color:#8a2a1f}
+.w.warn{background:#fff3df;color:#7a4a08}
+.w.info{background:#e6f1f6;color:#1f5670}
+.cols{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 10px;align-items:flex-start}
+.col{flex:0 0 250px;border:1px solid var(--line);border-radius:12px;background:#fdfcf8;padding:12px}
+.colh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.colh b{font-size:15px}
+.colh .btns{display:flex;gap:4px}
+.colw{font-size:12px;color:var(--green-d);background:var(--green-l);border-radius:6px;padding:2px 7px;display:inline-block;margin-bottom:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.two label{margin-bottom:0}
+.wman{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin:8px 0 10px}
+.row{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;margin-bottom:8px}
+.row.hl{outline:3px solid #9bbf86}
+.rtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.rn{font-weight:700;color:var(--green-d);font-size:13px}
+.rb{display:flex;gap:3px}
+.rfields{display:grid;grid-template-columns:1fr 1.2fr .9fr;gap:6px}
+.rfields label{margin:0;font-size:11px}
+.rfields2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.rfields2 label{margin:0;font-size:11px}
+.rcap{font-size:11.5px;color:var(--green-d);margin-top:6px}
+.colsum{font-size:12.5px;color:var(--mut);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.colsum .def{color:var(--warn);font-weight:600}
+.colsum .ok{color:var(--green)}
+.colsum .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.addcol{flex:0 0 120px;align-self:stretch;min-height:120px;border:2px dashed #b9c9ab;border-radius:12px;background:transparent;color:var(--green-d);font-weight:600}
+.addcol:hover{background:var(--green-l)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:nth-child(1),td:nth-child(1),th:nth-child(2),td:nth-child(2){text-align:left}
+th{background:#f3efe4;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut)}
+td.note{white-space:normal;color:var(--mut);font-size:12.5px;text-align:left}
+tr.sec td{background:var(--green-l);font-weight:650;color:var(--green-d);text-align:left}
+tfoot td{font-weight:650;border-top:2px solid var(--line)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tools .sp{flex:1}
+.tools label{margin:0;display:flex;align-items:center;gap:6px}
+.tools select{width:auto;margin:0}
+.hint{color:var(--mut);font-size:12.5px;margin:10px 0 0}
+.tablewrap{overflow-x:auto}
+@media print{
+  .noprint{display:none!important}
+  body{background:#fff}
+  .card{border:0;padding:0}
+  main{padding:0}
+  .top-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Eurobox-Regal Konfigurator</h1>
+  <p>Streben-Regal für Euroboxen – Spalten, Fächer, Box-Ausrichtung und Querschnitte frei konfigurieren, Bauteilliste inklusive</p>
+</header>
+
+<main>
+  <div class="top-grid">
+    <section class="card preview">
+      <h2>Vorschau</h2>
+      <div id="front"></div>
+      <div class="sub">
+        <h3>Draufsicht (oberstes Fach je Spalte, Schienen, Streben)</h3>
+        <div id="top"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ihre Konfiguration</h2>
+      <div class="chips" id="chips"></div>
+
+      <div class="noprint">
+        <div class="presets" id="presets"></div>
+        <div class="presets">
+          <button class="btn" data-act="exportHtml" title="Frontansicht, Draufsicht und Materialliste als eine HTML-Datei">Export: Ansichten + Materialliste (HTML)</button>
+          <button class="btn" data-act="exportPdf" title="Öffnet den Druckdialog – dort „Als PDF speichern“ wählen">Export als PDF</button>
+        </div>
+
+        <details>
+          <summary>Einstellungen (Standardformat, Querschnitte, Spiel, Tiefe)</summary>
+          <div class="set-grid" id="settings">
+            <div class="full">
+              <label>Standard-Boxformat (für neue Fächer)
+                <select id="fmt">
+                  <option value="40x60">Euro-Box 40 × 60 cm</option>
+                  <option value="30x40">Euro-Box 30 × 40 cm</option>
+                  <option value="20x30">Euro-Box 20 × 30 cm</option>
+                  <option value="custom">Eigenes Maß (siehe unten)</option>
+                </select>
+              </label>
+              <button class="all" data-act="applyFmt" title="Setzt das Standardformat bei allen Fächern">↳ auf alle Fächer anwenden</button>
+            </div>
+            <label>Eigenes Maß – kurze Seite (cm)<input type="number" id="fa" step="any" min="5"></label>
+            <label>Eigenes Maß – lange Seite (cm)<input type="number" id="fb" step="any" min="5"></label>
+
+            <h4>Querschnitte der Streben (cm)</h4>
+            <label>Vertikalstrebe – Breite<input type="number" id="pw" step="0.1" min="0.5"></label>
+            <label>Vertikalstrebe – Tiefe<input type="number" id="pd" step="0.1" min="0.5"></label>
+            <label>Tiefenstrebe (Schiene) – Breite<input type="number" id="rw" step="0.1" min="0.5"></label>
+            <label>Tiefenstrebe (Schiene) – Höhe<input type="number" id="rh" step="0.1" min="0.5"></label>
+            <label>Breitenstrebe – Tiefe<input type="number" id="sd" step="0.1" min="0.5"></label>
+            <label>Breitenstrebe – Höhe<input type="number" id="sh" step="0.1" min="0.5"></label>
+
+            <h4>Spiel &amp; Tiefe</h4>
+            <div>
+              <label>Spiel Höhe über Box (cm)<input type="number" id="spH" step="0.1" min="0"></label>
+              <button class="all" data-act="applySpH" title="Setzt bei allen Fächern mit Box: Fachhöhe = Box-Höhe + Spiel">↳ auf alle Fächer anwenden</button>
+            </div>
+            <label>Spiel Breite/Tiefe gesamt (cm)<input type="number" id="spW" step="0.1" min="0"></label>
+            <label class="chk full"><input type="checkbox" id="dMan"> Lichte Tiefe manuell festlegen (z. B. 81 cm für 2 Boxen hintereinander)</label>
+            <label>Lichte Tiefe zwischen den Vertikalstreben (cm)<input type="number" id="dVal" step="0.5" min="10"></label>
+          </div>
+        </details>
+      </div>
+
+      <div class="warns" id="warns"></div>
+      <p class="hint">Klicken Sie in der Vorschau auf ein Fach, um dessen Eingabefeld zu markieren.</p>
+    </section>
+  </div>
+
+  <section class="card noprint">
+    <h2>Spalten &amp; Fächer</h2>
+    <p class="hint" style="margin:0 0 12px">Jede Spalte hat eine eigene Fachaufteilung (von oben nach unten). Pro Fach legen Sie Boxformat und Ausrichtung fest, so lassen sich verschiedene Boxgrößen mischen (z. B. 30 × 40 gedreht und 40 × 60 in einer Spalte). Die Spaltenbreite richtet sich nach der breitesten Box; kleinere Boxen werden bei Platz nebeneinander gestellt, die Tiefe nimmt die tiefste Box vor. Fachhöhe = lichte Höhe zwischen den Schienen.</p>
+    <div class="cols" id="editor"></div>
+  </section>
+
+  <section class="card">
+    <h2>Bauteilliste</h2>
+    <div class="tools noprint">
+      <label>Einheit
+        <select id="unit"><option value="cm">cm</option><option value="mm">mm</option></select>
+      </label>
+      <span class="sp"></span>
+      <button class="btn" data-act="csv">CSV herunterladen</button>
+      <button class="btn" data-act="print">Drucken</button>
+    </div>
+    <div class="tablewrap" id="parts"></div>
+    <p class="hint">Zuschnittmaße ohne Zugabe. Schrauben sind ein Richtwert (4 Stück je Schiene bzw. Breitenstrebe). Euroboxen sind nicht im Holzbausatz enthalten. Gewicht mit ca. 450 kg/m³ (Fichte) berechnet.</p>
+  </section>
+</main>
+
+<script>
+/* ============================================================
+   Daten & Berechnung (rein funktional)
+   ============================================================ */
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const r1=v=>Math.round(v*10)/10;
+const clone=o=>JSON.parse(JSON.stringify(o));
+const BOX_H=[0,12,17,22,27,32];
+const FORMATS={'40x60':[40,60],'30x40':[30,40],'20x30':[20,30]};
+/* Fach: h = lichte Höhe, bh = Box-Höhe (0 = keine Box), cnt = Boxanzahl (null = auto),
+   fmt = Boxformat-Schlüssel, o = Ausrichtung ('s' = schmale Seite vorn, 'l' = lange Seite vorn) */
+const mkRow=(h,bh,o='s',fmt)=>({h,bh,cnt:null,fmt:fmt||S.fmtKey,o});
+const mkCol=(orient,n,rows)=>{ if(orient) rows.forEach(r=>r.o=orient); return {n,wMan:false,wVal:41,rows}; };
+const fmtDims=(S,key)=>FORMATS[key]||[S.fa,S.fb];
+
+/* pw/pd: Vertikalstrebe Breite/Tiefe · rw/rh: Tiefenstrebe (Schiene) Breite/Höhe · sd/sh: Breitenstrebe Tiefe/Höhe */
+const S={fmtKey:'40x60',fa:40,fb:60,pw:4.5,pd:4.5,rw:2,rh:4.5,sd:2,sh:4.5,
+         spH:1.5,spW:1,dMan:false,dVal:61,unit:'cm',cols:[]};
+
+const grid=(nc,nr,bh=32,orient='s')=>Array.from({length:nc},()=>
+  mkCol(orient,1,Array.from({length:nr},()=>mkRow(r1(bh+S.spH),bh))));
+
+const PRESETS={
+  '2 × 2':()=>grid(2,2),
+  '3 × 3':()=>grid(3,3),
+  '4 × 4':()=>grid(4,4),
+  'Mischbeispiel':()=>[
+    mkCol('s',1,[mkRow(23.5,22),mkRow(12,12),mkRow(12,12)]),
+    mkCol('s',1,[mkRow(23.5,22),mkRow(12,12),mkRow(12,12)]),
+    mkCol('s',1,[mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22)]),
+    mkCol('s',1,[mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22)])
+  ],
+  'Boxen mischen':()=>{
+    const small=()=>mkRow(23.5,22,'l','30x40');   // 30 × 40 gedreht: 40 breit × 30 tief, 2 Stück hintereinander
+    const big=()=>mkRow(33.5,32,'s','40x60');     // 40 × 60: 40 breit × 60 tief
+    return [0,1,2].map(()=>mkCol(null,1,[small(),small(),small(),big()]));
+  },
+  'Quer & hochkant':()=>[
+    mkCol('l',1,[mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22)]),
+    mkCol('s',1,[mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22)]),
+    mkCol('s',1,[mkRow(23.5,22),mkRow(23.5,22),mkRow(23.5,22)])
+  ]
+};
+
+/*
+  Aufbau einer Spalte von unten nach oben:
+  Breitenstrebe (vorne+hinten) → [Schiene → lichte Fachhöhe] × Fächer → Breitenstrebe (vorne+hinten)
+  Spaltenhöhe = 2·sh + Fächer·rh + Σ Fachhöhen
+  Vertikalstreben: je Trennlinie 2 Stück (vorne/hinten), Höhe = höhere der angrenzenden Spalten
+*/
+function rowFmt(S,r){
+  const [fa,fb]=fmtDims(S,r.fmt||S.fmtKey);
+  const a=Math.min(fa,fb), b=Math.max(fa,fb);
+  return {a,b,bw:r.o==='l'?b:a,bd:r.o==='l'?a:b};
+}
+function model(S){
+  const cols=S.cols.map(c=>({src:c,fr:c.rows.map(r=>({r,...rowFmt(S,r)}))}));
+  // Fächer mit Box bestimmen Breite und Tiefe; gibt es keine, zählen alle Fächer
+  const ref=c=>{ const w=c.fr.filter(x=>x.r.bh>0); return w.length?w:c.fr; };
+  const D=S.dMan?S.dVal:Math.max(...cols.map(c=>Math.max(...ref(c).map(x=>x.bd))))+S.spW;   // lichte Tiefe
+  const Dout=D+2*S.pd;                                                                       // Außentiefe
+  cols.forEach(c=>{
+    const n=clamp(Math.round(c.src.n)||1,1,10);
+    c.w=c.src.wMan?c.src.wVal:n*Math.max(...ref(c).map(x=>x.bw))+S.spW;                     // lichte Breite zwischen den Streben
+    c.rows=c.fr.map(x=>{
+      const r=x.r;
+      const across=Math.max(0,Math.floor((c.w-S.spW)/x.bw+1e-9));
+      const deep=Math.max(0,Math.floor((D-S.spW)/x.bd+1e-9));
+      const cap=across*deep;
+      const boxes=r.bh>0?(r.cnt==null?cap:r.cnt):0;
+      return {h:r.h,bh:r.bh,fmt:r.fmt||S.fmtKey,o:r.o,a:x.a,b:x.b,bw:x.bw,bd:x.bd,across,deep,cap,boxes,
+        railN:r.bh>0?Math.max(2,across+1):2,
+        badH:r.bh>0&&r.h<r.bh-1e-9,
+        over:r.bh>0&&boxes>cap,
+        nofit:r.bh>0&&cap===0};
+    });
+    c.H=2*S.sh+c.rows.length*S.rh+c.rows.reduce((s,r)=>s+r.h,0);
+  });
+  const H=Math.max(...cols.map(c=>c.H));
+  const W=cols.reduce((s,c)=>s+c.w,0)+(cols.length+1)*S.pw;
+  let x=S.pw; cols.forEach(c=>{c.x=x; x+=c.w+S.pw;});
+  // Vertikalstreben-Linien
+  const lines=[];
+  for(let i=0;i<=cols.length;i++){
+    const l=cols[i-1], r=cols[i];
+    lines.push({x:i===0?0:l.x+l.w, h:Math.max(l?l.H:0,r?r.H:0)});
+  }
+  // Deckel-Abschnitte: benachbarte Spalten gleicher Höhe werden zu einer durchgehenden oberen Breitenstrebe.
+  // Grenzt eine höhere Spalte an, endet der Deckel an deren Vertikalstrebe (stößt seitlich an).
+  const runs=[]; let ri=0;
+  while(ri<cols.length){
+    let rj=ri; while(rj+1<cols.length&&Math.abs(cols[rj+1].H-cols[ri].H)<0.05) rj++;
+    const Hh=cols[ri].H;
+    const leftTall=ri>0&&cols[ri-1].H>Hh+0.05;
+    const rightTall=rj<cols.length-1&&cols[rj+1].H>Hh+0.05;
+    const x0=leftTall?lines[ri].x+S.pw:lines[ri].x;
+    const x1=rightTall?lines[rj+1].x:lines[rj+1].x+S.pw;
+    runs.push({i:ri,j:rj,H:Hh,x0,x1,len:x1-x0,posts:rj-ri+2});
+    ri=rj+1;
+  }
+  const boxTotal=cols.reduce((s,c)=>s+c.rows.reduce((q,r)=>q+r.boxes,0),0);
+  const fachTotal=cols.reduce((s,c)=>s+c.rows.length,0);
+  return {cols,lines,runs,W,H,D,Dout,boxTotal,fachTotal};
+}
+
+const f0=v=>Number(v).toLocaleString('de-DE',{maximumFractionDigits:1});
+function partsList(m,S){
+  const items=[];
+  // Vertikalstreben
+  const posts={};
+  m.lines.forEach(l=>{ const len=l.h-S.sh; const k=len.toFixed(2); posts[k]=posts[k]||{h:len,qty:0}; posts[k].qty+=2; });
+  Object.values(posts).sort((x,y)=>y.h-x.h).forEach(p=>items.push({
+    name:'Vertikalstrebe',qty:p.qty,l:p.h,a:S.pw,b:S.pd,
+    note:'je Trennlinie vorne + hinten; Länge = höhere der angrenzenden Spalten abzüglich der aufliegenden oberen Breitenstrebe'}));
+  // Tiefenstreben (Schienen)
+  let rails=0, mid=0;
+  m.cols.forEach(c=>c.rows.forEach(r=>{ rails+=r.railN; mid+=r.railN-2; }));
+  items.push({name:'Tiefenstrebe (Schiene)',qty:rails,l:m.Dout,a:S.rw,b:S.rh,
+    note:`seitlich an die Vertikalstreben geschraubt, volle Außentiefe${mid?`; davon ${mid} Mittelschienen zwischen nebeneinander stehenden Boxen`:''}`});
+  // Breitenstrebe unten: durchgehend über die gesamte Breite, in der Tiefe nach innen versetzt (innen an den Vertikalstreben)
+  items.push({name:'Breitenstrebe unten',qty:2,l:m.W,a:S.sd,b:S.sh,
+    note:'vorne + hinten, durchgehend über die gesamte Breite, innen an die Vertikalstreben geschraubt (nach innen versetzt), unter der untersten Schiene'});
+  // Breitenstrebe oben: Deckel auf den Vertikalstreben, an Höhensprüngen unterbrochen
+  const lid={};
+  m.runs.forEach(r=>{ const k=r.len.toFixed(2); lid[k]=lid[k]||{len:r.len,qty:0}; lid[k].qty+=2; });
+  Object.values(lid).sort((x,y)=>y.len-x.len).forEach(o=>items.push({
+    name:'Breitenstrebe oben (Deckel)',qty:o.qty,l:o.len,a:S.sd,b:S.sh,
+    note:'vorne + hinten, liegt auf den Vertikalstreben; endet an einem Höhensprung an der höheren Vertikalstrebe'}));
+  const lidScrews=m.runs.reduce((s,r)=>s+2*r.posts*2,0);
+  const screws={name:'Holzschrauben (Richtwert)',qty:rails*4+2*(m.cols.length+1)*2+lidScrews,
+    note:'z. B. 5 × 80 mm: 4 je Schiene, 2 je Kontaktstelle der Breitenstreben mit einer Vertikalstrebe'};
+  const boxes={};
+  m.cols.forEach(c=>c.rows.forEach(r=>{
+    if(r.boxes>0){
+      const k=`${r.a}|${r.b}|${r.bh}`;
+      boxes[k]=boxes[k]||{a:r.a,b:r.b,bh:r.bh,qty:0};
+      boxes[k].qty+=r.boxes;
+    }
+  }));
+  const boxItems=Object.values(boxes).sort((x,y)=>x.a-y.a||x.b-y.b||x.bh-y.bh).map(o=>({
+    qty:o.qty,name:`Euro-Box ${f0(o.a)} × ${f0(o.b)} cm, Höhe ${f0(o.bh)} cm`}));
+  const vol=items.reduce((s,i)=>s+i.qty*i.l*i.a*i.b,0)/1e6;
+  return {items,screws,boxItems,vol,kg:vol*450};
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+/*UI*/
+const $=s=>document.querySelector(s);
+const f=(v,d=1)=>Number(v).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:d});
+const fu=v=>S.unit==='mm'?f(v*10,0):f(v,1);
+const fq=(a,b)=>`${fu(a)} × ${fu(b)}`;
+let M=null;
+
+function renderEditor(){
+  const hOpts=cur=>{
+    const list=BOX_H.includes(cur)?BOX_H:[...BOX_H,cur].sort((a,b)=>a-b);
+    return list.map(v=>`<option value="${v}"${v===cur?' selected':''}>${v===0?'ohne Box':v+' cm'}</option>`).join('');
+  };
+  const fmtOpts=cur=>[['40x60','Euro 40 × 60'],['30x40','Euro 30 × 40'],['20x30','Euro 20 × 30'],['custom',`Eigenes Maß ${f0(S.fa)} × ${f0(S.fb)}`]]
+    .map(([k,t])=>`<option value="${k}"${k===cur?' selected':''}>${t}</option>`).join('');
+  const oOpts=r=>{ const d=rowFmt(S,r);
+    return `<option value="s"${r.o!=='l'?' selected':''}>${f0(d.a)} breit × ${f0(d.b)} tief</option>
+            <option value="l"${r.o==='l'?' selected':''}>${f0(d.b)} breit × ${f0(d.a)} tief</option>`; };
+  const all=(fl,t)=>`<button class="all" data-act="all" data-f="${fl}" title="${t}">↳ alle</button>`;
+  $('#editor').innerHTML=S.cols.map((c,ci)=>`
+    <div class="col" data-c="${ci}">
+      <div class="colh">
+        <b>Spalte ${ci+1}</b>
+        <div class="btns">
+          <button class="ib" data-act="colL" title="nach links">◀</button>
+          <button class="ib" data-act="colR" title="nach rechts">▶</button>
+          <button class="ib" data-act="dupcol" title="Spalte duplizieren">⧉</button>
+          <button class="ib del" data-act="delcol" title="Spalte löschen">✕</button>
+        </div>
+      </div>
+      <span class="colw"></span>
+      <div class="two">
+        <div>
+          <label>Format (alle Fächer)
+            <select data-f="cfmt">
+              <option value="">setzen …</option>
+              ${fmtOpts('')}
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>Ausrichtung (alle Fächer)
+            <select data-f="co">
+              <option value="">setzen …</option>
+              <option value="s">schmale Seite vorn</option>
+              <option value="l">lange Seite vorn</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>Boxen nebeneinander (Spaltenbreite)
+          <input type="number" data-f="n" min="1" max="10" step="1" value="${c.n}">
+        </label>${all('n','Anzahl auf alle Spalten übertragen')}
+      </div>
+      <div class="wman">
+        <label class="chk" style="margin:0"><input type="checkbox" data-f="wMan"${c.wMan?' checked':''}> Breite manuell</label>
+        <input type="number" data-f="wVal" step="0.5" min="5" value="${c.wVal}">
+      </div>
+      ${c.rows.map((r,ri)=>`
+        <div class="row" data-r="${ri}">
+          <div class="rtop">
+            <span class="rn">Fach ${ri+1} <span style="font-weight:400;color:var(--mut)">${ri===0?'(oben)':ri===c.rows.length-1?'(unten)':''}</span></span>
+            <div class="rb">
+              <button class="ib" data-act="up" title="nach oben">↑</button>
+              <button class="ib" data-act="down" title="nach unten">↓</button>
+              <button class="ib" data-act="duprow" title="Fach duplizieren">⧉</button>
+              <button class="ib del" data-act="delrow" title="Fach löschen">✕</button>
+            </div>
+          </div>
+          <div class="rfields">
+            <div><label>Höhe (cm)<input type="number" data-f="h" step="0.5" min="1" value="${r.h}"></label></div>
+            <div><label>Box-Höhe<select data-f="bh">${hOpts(r.bh)}</select></label></div>
+            <div><label>Boxen<input type="number" data-f="cnt" min="0" step="1" value="${r.cnt==null?'':r.cnt}"></label></div>
+          </div>
+          <div class="rfields2">
+            <div><label>Boxformat<select data-f="fmt">${fmtOpts(r.fmt||S.fmtKey)}</select></label></div>
+            <div><label>Ausrichtung<select data-f="o">${oOpts(r)}</select></label></div>
+          </div>
+          <div class="rcap"></div>
+        </div>`).join('')}
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn sm" data-act="addrow">+ Fach</button>
+        <button class="btn sm" data-act="applyall" title="Diese Fachaufteilung auf alle Spalten übertragen">Aufteilung → alle Spalten</button>
+      </div>
+      <div class="colsum"></div>
+    </div>`).join('')+`<button class="addcol" data-act="addcol">+ Spalte<br>hinzufügen</button>`;
+  update();
+}
+
+function syncEditor(m){
+  m.cols.forEach((c,ci)=>{
+    const el=document.querySelector(`.col[data-c="${ci}"]`); if(!el) return;
+    el.querySelector('.colw').textContent=`Breite innen ${f(c.w)} cm`;
+    el.querySelector('[data-f=wVal]').disabled=!c.src.wMan;
+    el.querySelector('[data-f=n]').disabled=c.src.wMan;
+    c.rows.forEach((r,ri)=>{
+      const re=el.querySelector(`.row[data-r="${ri}"]`); if(!re) return;
+      const h=re.querySelector('[data-f=h]'), cn=re.querySelector('[data-f=cnt]');
+      h.classList.toggle('bad',r.badH);
+      cn.classList.toggle('bad',r.over||r.nofit);
+      cn.placeholder=r.bh>0?`${r.cap} (auto)`:'–';
+      cn.disabled=r.bh===0;
+      re.querySelector('.rcap').textContent=r.bh>0?`Platz: ${r.across} × ${r.deep} = ${r.cap} Boxen (${f(r.bw)} breit × ${f(r.bd)} tief)`:'keine Box in diesem Fach';
+    });
+    const def=m.H-c.H;
+    const sum=el.querySelector('.colsum');
+    if(def>0.05){
+      const canFill=def-S.rh>=3;
+      sum.innerHTML=`Höhe gesamt: ${f(c.H)} cm<br><span class="def">Offen bis Regalhöhe: ${f(def)} cm</span> (dort keine Vertikalstreben)
+        <div class="acts">
+          <button class="btn sm" data-act="stretch">Oberstes Fach +${f(def)} cm</button>
+          ${canFill?`<button class="btn sm" data-act="fill">Als Fach ergänzen (${f(r1(def-S.rh))} cm)</button>`:''}
+        </div>`;
+    } else {
+      sum.innerHTML=`Höhe gesamt: ${f(c.H)} cm <span class="ok">✓ bündig</span>`;
+    }
+  });
+}
+
+function update(){
+  if(!S.cols.length) return;
+  const m=M=model(S); const p=partsList(m,S);
+  $('#front').innerHTML=drawFront(m);
+  $('#top').innerHTML=drawTop(m);
+  $('#chips').innerHTML=[
+    ['Breite',f(m.W)+' cm'],['Höhe',f(m.H)+' cm'],['Tiefe',f(m.Dout)+' cm'],
+    ['Boxen',m.boxTotal],['Fächer',m.fachTotal],['Holz',f(p.vol,2)+' m³ · '+f(p.kg,0)+' kg']
+  ].map(([k,v])=>`<div class="chip">${k}<b>${v}</b></div>`).join('');
+  renderWarnings(m);
+  renderParts(m,p);
+  syncEditor(m);
+  $('#dVal').disabled=!S.dMan;
+  if(!S.dMan) $('#dVal').value=r1(m.D);
+}
+
+function renderWarnings(m){
+  const w=[];
+  m.cols.forEach((c,ci)=>{
+    c.rows.forEach((r,ri)=>{
+      if(r.badH) w.push(['bad',`Spalte ${ci+1}, Fach ${ri+1}: Fachhöhe (${f(r.h)} cm) ist niedriger als die Box (${r.bh} cm).`]);
+      if(r.nofit) w.push(['bad',`Spalte ${ci+1}, Fach ${ri+1}: Box passt nicht in die Breite/Tiefe.`]);
+      else if(r.over) w.push(['bad',`Spalte ${ci+1}, Fach ${ri+1}: ${r.boxes} Boxen eingetragen, Platz ist nur für ${r.cap}.`]);
+    });
+    const unused=c.rows.map((r,ri)=>({ri,free:m.D-S.spW-r.deep*r.bd,r})).filter(x=>x.r.bh>0&&x.r.deep>0&&x.free>=5);
+    if(unused.length) w.push(['info',`Spalte ${ci+1}, Fach ${unused.map(x=>x.ri+1).join(', ')}: bis zu ${f(Math.max(...unused.map(x=>x.free)))} cm der lichten Tiefe (${f(m.D)} cm) bleiben ungenutzt.`]);
+  });
+  $('#warns').innerHTML=w.map(([t,s])=>`<div class="w ${t}">${s}</div>`).join('');
+}
+
+function renderParts(m,p){
+  let n=0;
+  const rows=p.items.map(i=>`<tr><td>${++n}</td><td>${i.name}</td><td>${i.qty}</td>
+    <td>${fu(i.l)}</td><td>${fq(i.a,i.b)}</td><td class="note">${i.note||''}</td></tr>`).join('');
+  const hw=`<tr><td>${++n}</td><td>${p.screws.name}</td><td>${p.screws.qty}</td><td>–</td><td>–</td><td class="note">${p.screws.note}</td></tr>`;
+  const bx=p.boxItems.map(i=>`<tr><td>${++n}</td><td>${i.name}</td><td>${i.qty}</td><td>–</td><td>–</td><td class="note">nicht im Bausatz enthalten</td></tr>`).join('');
+  $('#parts').innerHTML=`<table>
+    <thead><tr><th>Pos.</th><th>Bauteil</th><th>Anzahl</th><th>Länge (${S.unit})</th><th>Querschnitt (${S.unit})</th><th style="text-align:left">Hinweis</th></tr></thead>
+    <tbody>
+      <tr class="sec"><td colspan="6">Holzzuschnitt</td></tr>${rows}
+      <tr class="sec"><td colspan="6">Befestigung</td></tr>${hw}
+      ${bx?`<tr class="sec"><td colspan="6">Benötigte Euroboxen (separat)</td></tr>${bx}`:''}
+    </tbody>
+    <tfoot><tr><td></td><td>Holzteile gesamt</td><td>${p.items.reduce((s,i)=>s+i.qty,0)}</td><td colspan="3" style="text-align:left">${f(p.vol,3)} m³ · ca. ${f(p.kg,0)} kg · Gesamtmaß ${f(m.W)} × ${f(m.H)} × ${f(m.Dout)} cm (B × H × T)</td></tr></tfoot>
+  </table>`;
+}
+
+/* ---------- Zeichnungen ---------- */
+function drawFront(m){
+  const {cols,lines,W,H}=m; const fs=Math.max(W,H)/40;
+  // offene Bereiche (Spalten niedriger als die Regalhöhe) bekommen eine Maßkette über die gesamte Spaltenhöhe
+  const open=m.runs.filter(r=>H-r.H>0.05).map(r=>({r,side:r.i===0?'L':(r.j===cols.length-1?'R':'M')}));
+  const hasL=open.some(o=>o.side==='L'), hasR=open.some(o=>o.side==='R');
+  const pl=fs*(1+(hasL?6.2:0)), pr=fs*(4.4+(hasR?6.4:0)), pt=fs*1, pb=fs*5.4;
+  const sw=fs*.08;
+  const wood=`fill="#e0bd8a" stroke="#a9804a" stroke-width="${sw}"`;
+  const rail=`fill="#c99d62" stroke="#8d6a3a" stroke-width="${sw}"`;
+  let s=`<svg viewBox="${-pl} ${-pt} ${W+pl+pr} ${H+pt+pb}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+    <defs><pattern id="hatch" width="${fs*.8}" height="${fs*.8}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="${fs*.8}" stroke="#c9c2ae" stroke-width="${fs*.14}"/></pattern></defs>`;
+  cols.forEach((c,ci)=>{
+    // offener Bereich
+    if(H-c.H>0.05){
+      s+=`<rect x="${c.x}" y="0" width="${c.w}" height="${H-c.H}" fill="url(#hatch)"/>
+          <text x="${c.x+c.w/2}" y="${(H-c.H)/2+fs*.3}" font-size="${fs*.8}" text-anchor="middle" fill="#8a7f63">offen ${f(H-c.H)} cm</text>`;
+    }
+    let yb=S.sh;
+    for(let i=c.rows.length-1;i>=0;i--){
+      const r=c.rows[i];
+      const yFach=H-(yb+S.rh+r.h);
+      // Fach (lichte Fläche)
+      s+=`<rect class="fach" data-fc="${ci}" data-fr="${i}" x="${c.x}" y="${yFach}" width="${c.w}" height="${r.h}"/>`;
+      // Boxen auf den Schienen
+      if(r.bh>0){
+        const bh=Math.min(r.bh,r.h), shown=Math.min(r.boxes,r.across);
+        for(let k=0;k<shown;k++){
+          const bx=c.x+S.spW/2+k*r.bw;
+          s+=`<rect x="${bx}" y="${H-(yb+S.rh)-bh}" width="${r.bw}" height="${bh}" rx="${fs*.3}" fill="#6f93b3" stroke="#3f6384" stroke-width="${sw}" pointer-events="none"/>
+              <rect x="${bx+r.bw*.3}" y="${H-(yb+S.rh)-bh+bh*.12}" width="${r.bw*.4}" height="${Math.min(bh*.18,fs*.9)}" rx="${fs*.2}" fill="#3f6384" pointer-events="none"/>`;
+        }
+        s+=`<text x="${c.x+c.w-fs*.4}" y="${yFach+fs*1.15}" font-size="${fs*.62}" text-anchor="end" fill="#3f6384" paint-order="stroke" stroke="#fbf7ee" stroke-width="${fs*.25}" pointer-events="none">${f(r.bw)}×${f(r.bd)}${r.boxes>shown?` (${r.boxes}×)`:''}</text>`;
+      }
+      s+=`<text x="${c.x+fs*.5}" y="${yFach+fs*1.15}" font-size="${fs*.82}" fill="#6b5a3a" paint-order="stroke" stroke="#fbf7ee" stroke-width="${fs*.3}" pointer-events="none">${f(r.h)}</text>`;
+      // Schienen (Stirnseiten) links, rechts und ggf. zwischen den Boxen
+      const ry=H-(yb+S.rh);
+      const xs=[c.x, c.x+c.w-S.rw];
+      if(r.bh>0) for(let k=1;k<r.across;k++) xs.push(c.x+S.spW/2+k*r.bw-S.rw/2);
+      xs.forEach(x=>{ s+=`<rect x="${x}" y="${ry}" width="${S.rw}" height="${S.rh}" ${rail} pointer-events="none"/>`; });
+      yb+=S.rh+r.h;
+    }
+  });
+  // untere Breitenstrebe: durchgehend über die gesamte Breite (liegt in der Tiefe innen, hinter der vorderen Vertikalstrebe)
+  s+=`<rect x="0" y="${H-S.sh}" width="${W}" height="${S.sh}" ${wood}/>`;
+  // Vertikalstreben (nur wo Spalten stehen); der Deckel sitzt oben darauf
+  lines.forEach(l=>{ s+=`<rect x="${l.x}" y="${H-l.h+S.sh}" width="${S.pw}" height="${l.h-S.sh}" ${wood}/>`; });
+  // obere Breitenstrebe = Deckel auf den Vertikalstreben
+  m.runs.forEach(r=>{ s+=`<rect x="${r.x0}" y="${H-r.H}" width="${r.len}" height="${S.sh}" ${wood}/>`; });
+  s+=`<line x1="${-fs*.6}" y1="${H}" x2="${W+fs*.6}" y2="${H}" stroke="#5c5a50" stroke-width="${fs*.14}"/>`;
+  // Maßlinien
+  const dim='stroke="#3a3a35" stroke-width="'+sw+'"';
+  const yc=H+fs*1.9;
+  cols.forEach(c=>{
+    s+=`<line x1="${c.x}" y1="${yc}" x2="${c.x+c.w}" y2="${yc}" ${dim}/>
+        <line x1="${c.x}" y1="${yc-fs*.35}" x2="${c.x}" y2="${yc+fs*.35}" ${dim}/>
+        <line x1="${c.x+c.w}" y1="${yc-fs*.35}" x2="${c.x+c.w}" y2="${yc+fs*.35}" ${dim}/>
+        <text x="${c.x+c.w/2}" y="${yc-fs*.5}" font-size="${fs*.78}" text-anchor="middle" fill="#555">${f(c.w)}</text>`;
+  });
+  const yw=H+fs*4.2;
+  s+=`<line x1="0" y1="${yw}" x2="${W}" y2="${yw}" ${dim}/>
+      <line x1="0" y1="${yw-fs*.45}" x2="0" y2="${yw+fs*.45}" ${dim}/>
+      <line x1="${W}" y1="${yw-fs*.45}" x2="${W}" y2="${yw+fs*.45}" ${dim}/>
+      <text x="${W/2}" y="${yw+fs*1.25}" font-size="${fs*.95}" font-weight="600" text-anchor="middle" fill="#222">${f(W)} cm</text>`;
+  const xh=W+fs*2;
+  s+=`<line x1="${xh}" y1="0" x2="${xh}" y2="${H}" ${dim}/>
+      <line x1="${xh-fs*.45}" y1="0" x2="${xh+fs*.45}" y2="0" ${dim}/>
+      <line x1="${xh-fs*.45}" y1="${H}" x2="${xh+fs*.45}" y2="${H}" ${dim}/>
+      <text transform="translate(${xh+fs*1.2} ${H/2}) rotate(-90)" font-size="${fs*.95}" font-weight="600" text-anchor="middle" fill="#222">${f(H)} cm</text>`;
+
+  // Maßkette für offene Bereiche, gleiche Darstellung wie die Höhenmaßlinie rechts:
+  // untere Breitenstrebe, Schiene, Fach, Schiene, Fach … obere Breitenstrebe, daneben das Gesamtmaß
+  const dimC='stroke="#3a3a35" stroke-width="'+sw+'"';
+  const chainSvg=(c,x,side,total)=>{
+    const segs=[{l:S.sh}];
+    for(let i=c.rows.length-1;i>=0;i--) segs.push({l:S.rh},{l:c.rows[i].h});
+    segs.push({l:S.sh});
+    const tick=(xx,yy,k=.35)=>`<line x1="${xx-fs*k}" y1="${H-yy}" x2="${xx+fs*k}" y2="${H-yy}" ${dimC}/>`;
+    let o=`<line x1="${x}" y1="${H}" x2="${x}" y2="${H-c.H}" ${dimC}/>`+tick(x,0);
+    let y=0;
+    segs.forEach(sg=>{
+      const mid=y+sg.l/2; y+=sg.l; o+=tick(x,y);
+      if(sg.l>=fs*.75) o+=`<text x="${x+side*fs*.55}" y="${H-mid+fs*.22}" font-size="${fs*.62}" text-anchor="${side<0?'end':'start'}" fill="#555" paint-order="stroke" stroke="#fff" stroke-width="${fs*.2}" pointer-events="none">${f(sg.l)}</text>`;
+    });
+    if(total){
+      const xt=x+side*fs*3.4;
+      o+=`<line x1="${xt}" y1="${H}" x2="${xt}" y2="${H-c.H}" ${dimC}/>`+tick(xt,0,.45)+tick(xt,c.H,.45)+
+         `<text transform="translate(${xt+side*fs*1.2} ${H-c.H/2}) rotate(-90)" font-size="${fs*.95}" font-weight="600" text-anchor="middle" fill="#222">${f(c.H)} cm</text>`;
+    } else {
+      o+=`<text x="${x}" y="${H-c.H-fs*.45}" font-size="${fs*.78}" font-weight="600" text-anchor="middle" fill="#222" paint-order="stroke" stroke="#fff" stroke-width="${fs*.2}">${f(c.H)} cm</text>`;
+    }
+    return o;
+  };
+  open.forEach(({r,side})=>{
+    if(side==='L') s+=chainSvg(cols[r.i],-fs*1.6,-1,true);
+    else if(side==='R') s+=chainSvg(cols[r.j],W+fs*5,1,true);
+    else s+=chainSvg(cols[r.i],cols[r.i].x+fs*.6,1,false);
+  });
+  return s+'</svg>';
+}
+
+function drawTop(m){
+  const {cols,lines,W,D,Dout}=m; const fs=Math.max(W,Dout)/38;
+  const pl=fs, pr=fs, pt=fs*1.4, pb=fs*3.2;
+  const sw=fs*.07;
+  let s=`<svg viewBox="${-pl} ${-pt} ${W+pl+pr} ${Dout+pt+pb}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">`;
+  const wood=`fill="#e0bd8a" stroke="#a9804a" stroke-width="${sw}"`;
+  s+=`<text x="${W/2}" y="${-fs*.5}" font-size="${fs*.8}" text-anchor="middle" fill="#888">hinten</text>`;
+  cols.forEach(c=>{
+    const ref=c.rows.find(r=>r.bh>0)||c.rows[0];   // von oben sichtbar: oberstes Fach mit Box
+    s+=`<rect x="${c.x}" y="0" width="${c.w}" height="${Dout}" fill="#fbf7ee"/>`;
+    // Schienen
+    const xs=[c.x, c.x+c.w-S.rw];
+    if(ref.bh>0) for(let k=1;k<ref.across;k++) xs.push(c.x+S.spW/2+k*ref.bw-S.rw/2);
+    xs.forEach(x=>{ s+=`<rect x="${x}" y="0" width="${S.rw}" height="${Dout}" fill="#c99d62" stroke="#8d6a3a" stroke-width="${sw}"/>`; });
+    // Boxen
+    for(let a=0;a<ref.across;a++) for(let d=0;d<ref.deep;d++){
+      const x=c.x+S.spW/2+a*ref.bw, y=S.pd+D-S.spW/2-(d+1)*ref.bd;
+      s+=`<rect x="${x}" y="${y}" width="${ref.bw}" height="${ref.bd}" rx="${fs*.3}" fill="#b9cde0" fill-opacity=".85" stroke="#3f6384" stroke-width="${sw}"/>`;
+    }
+    if(ref.cap>0) s+=`<text x="${c.x+c.w/2}" y="${S.pd+D-S.spW/2-ref.bd/2+fs*.3}" font-size="${fs*.85}" text-anchor="middle" fill="#2b4a66">${f(ref.bw)}×${f(ref.bd)}</text>`;
+  });
+  // untere Breitenstrebe (verdeckt, gestrichelt): durchgehend, innen an den Vertikalstreben
+  s+=`<rect x="0" y="${S.pd}" width="${W}" height="${S.sd}" fill="none" stroke="#8d6a3a" stroke-width="${sw}" stroke-dasharray="${fs*.4} ${fs*.3}"/>
+      <rect x="0" y="${Dout-S.pd-S.sd}" width="${W}" height="${S.sd}" fill="none" stroke="#8d6a3a" stroke-width="${sw}" stroke-dasharray="${fs*.4} ${fs*.3}"/>`;
+  // Vertikalstreben vorne + hinten
+  lines.forEach(l=>{
+    s+=`<rect x="${l.x}" y="0" width="${S.pw}" height="${S.pd}" ${wood}/>
+        <rect x="${l.x}" y="${Dout-S.pd}" width="${S.pw}" height="${S.pd}" ${wood}/>`;
+  });
+  // obere Breitenstrebe (Deckel) liegt auf den Vertikalstreben
+  m.runs.forEach(r=>{
+    s+=`<rect x="${r.x0}" y="0" width="${r.len}" height="${S.sd}" fill="#d4ad74" stroke="#8d6a3a" stroke-width="${sw}"/>
+        <rect x="${r.x0}" y="${Dout-S.sd}" width="${r.len}" height="${S.sd}" fill="#d4ad74" stroke="#8d6a3a" stroke-width="${sw}"/>`;
+  });
+  s+=`<text x="${W/2}" y="${Dout+fs*1.3}" font-size="${fs*.8}" text-anchor="middle" fill="#888">vorne</text>
+      <text x="${W/2}" y="${Dout+fs*2.6}" font-size="${fs*.9}" font-weight="600" text-anchor="middle" fill="#333">Tiefe ${f(Dout)} cm (lichte Tiefe ${f(D)} cm)</text>`;
+  return s+'</svg>';
+}
+
+/* ---------- Export ---------- */
+function csv(){
+  const m=M, p=partsList(m,S);
+  const q=v=>`"${String(v).replace(/"/g,'""')}"`;
+  const u=S.unit;
+  const L=[['Pos','Bauteil','Anzahl',`Länge (${u})`,`Querschnitt (${u})`,'Hinweis'].map(q).join(';')];
+  let n=0;
+  p.items.forEach(i=>L.push([++n,i.name,i.qty,fu(i.l),fq(i.a,i.b),i.note||''].map(q).join(';')));
+  L.push([++n,p.screws.name,p.screws.qty,'','',p.screws.note].map(q).join(';'));
+  p.boxItems.forEach(i=>L.push([++n,i.name,i.qty,'','','nicht im Bausatz'].map(q).join(';')));
+  L.push('');
+  L.push(['Gesamtmaß B x H x T (cm)',`${f(m.W)} x ${f(m.H)} x ${f(m.Dout)}`].map(q).join(';'));
+  const blob=new Blob(['﻿'+L.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='bauteilliste-eurobox-regal.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function buildReport(){
+  const m=M, d=new Date().toLocaleDateString('de-DE');
+  return `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Eurobox-Regal – Export</title><style>
+body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#25302a;max-width:1100px;margin:24px auto;padding:0 20px}
+h1{margin:0 0 4px;font-size:24px} h2{margin:26px 0 8px;font-size:17px;border-bottom:1px solid #e2dccd;padding-bottom:4px}
+.meta{color:#6b7468;margin:0}
+svg{width:100%;height:auto;max-height:720px;display:block}
+.fach{fill:#fbf7ee}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid #e2dccd;text-align:right;white-space:nowrap}
+th:nth-child(1),td:nth-child(1),th:nth-child(2),td:nth-child(2){text-align:left}
+th{background:#f3efe4;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#6b7468}
+td.note{white-space:normal;color:#6b7468;font-size:12px;text-align:left}
+tr.sec td{background:#e8f0e1;font-weight:650;color:#2e5120;text-align:left}
+tfoot td{font-weight:650;border-top:2px solid #e2dccd}
+@media print{body{margin:0;max-width:none} svg,table{break-inside:avoid} h2{break-after:avoid} svg{max-height:460px}}
+</style></head><body>
+<h1>Eurobox-Regal</h1>
+<p class="meta">Erstellt am ${d} · Gesamtmaß ${f(m.W)} × ${f(m.H)} × ${f(m.Dout)} cm (B × H × T) · ${m.boxTotal} Boxen in ${m.fachTotal} Fächern</p>
+<h2>Frontansicht</h2>${drawFront(m)}
+<h2>Draufsicht</h2>${drawTop(m)}
+<h2>Materialliste</h2>${$('#parts').innerHTML}
+</body></html>`;
+}
+function exportHtml(){
+  const blob=new Blob([buildReport()],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='eurobox-regal-export.html';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function exportPdf(){
+  const fr=document.createElement('iframe');
+  fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(fr);
+  fr.onload=()=>{ fr.contentWindow.focus(); fr.contentWindow.print(); setTimeout(()=>fr.remove(),120000); };
+  fr.srcdoc=buildReport();
+}
+
+/* ---------- Events ---------- */
+const numOf=el=>{const v=parseFloat(String(el.value).replace(',','.'));return isFinite(v)?v:null;};
+
+$('#editor').addEventListener('input',e=>{
+  const el=e.target, fld=el.dataset.f; if(!fld||el.dataset.act) return;
+  const colEl=el.closest('.col'), ci=+colEl.dataset.c, c=S.cols[ci];
+  const rowEl=el.closest('.row');
+  if(rowEl){
+    const r=c.rows[+rowEl.dataset.r];
+    if(fld==='fmt'){ r.fmt=el.value; renderEditor(); return; }
+    if(fld==='o'){ r.o=el.value; }
+    else if(fld==='h'){const v=numOf(el); if(v!=null&&v>0) r.h=v;}
+    else if(fld==='cnt'){const v=numOf(el); r.cnt=v==null?null:Math.max(0,Math.round(v));}
+    else if(fld==='bh'){
+      r.bh=+el.value;
+      if(r.bh>0){ r.h=r1(r.bh+S.spH); rowEl.querySelector('[data-f=h]').value=r.h; }
+      else r.cnt=null;
+    }
+  } else {
+    if(fld==='cfmt'||fld==='co'){
+      if(el.value){ c.rows.forEach(r=>{ if(fld==='cfmt') r.fmt=el.value; else r.o=el.value; }); }
+      renderEditor(); return;
+    }
+    else if(fld==='n'){const v=numOf(el); if(v!=null) c.n=clamp(Math.round(v),1,10);}
+    else if(fld==='wMan') c.wMan=el.checked;
+    else if(fld==='wVal'){const v=numOf(el); if(v!=null&&v>0) c.wVal=v;}
+  }
+  update();
+});
+
+document.addEventListener('click',e=>{
+  const fc=e.target.closest('[data-fc]');
+  if(fc){
+    const col=document.querySelector(`.col[data-c="${fc.dataset.fc}"]`);
+    const row=col&&col.querySelector(`.row[data-r="${fc.dataset.fr}"]`);
+    if(row){
+      document.querySelectorAll('.row.hl').forEach(x=>x.classList.remove('hl'));
+      row.classList.add('hl'); setTimeout(()=>row.classList.remove('hl'),1800);
+      row.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+      const inp=row.querySelector('[data-f=h]'); inp.focus({preventScroll:true}); inp.select();
+    }
+    return;
+  }
+  const pr=e.target.closest('[data-preset]');
+  if(pr){ S.cols=PRESETS[pr.dataset.preset](); renderEditor(); return; }
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const act=b.dataset.act;
+  const colEl=b.closest('.col'), rowEl=b.closest('.row');
+  const ci=colEl?+colEl.dataset.c:-1, c=S.cols[ci], ri=rowEl?+rowEl.dataset.r:-1;
+  switch(act){
+    case 'addcol': S.cols.push(S.cols.length?clone(S.cols[S.cols.length-1]):mkCol('s',1,[mkRow(33.5,32)])); break;
+    case 'dupcol': S.cols.splice(ci+1,0,clone(c)); break;
+    case 'delcol': if(S.cols.length>1) S.cols.splice(ci,1); break;
+    case 'colL': if(ci>0) [S.cols[ci-1],S.cols[ci]]=[S.cols[ci],S.cols[ci-1]]; break;
+    case 'colR': if(ci<S.cols.length-1) [S.cols[ci+1],S.cols[ci]]=[S.cols[ci],S.cols[ci+1]]; break;
+    case 'addrow': c.rows.push(clone(c.rows[c.rows.length-1])); break;
+    case 'duprow': c.rows.splice(ri+1,0,clone(c.rows[ri])); break;
+    case 'delrow': if(c.rows.length>1) c.rows.splice(ri,1); break;
+    case 'up': if(ri>0) [c.rows[ri-1],c.rows[ri]]=[c.rows[ri],c.rows[ri-1]]; break;
+    case 'down': if(ri<c.rows.length-1) [c.rows[ri+1],c.rows[ri]]=[c.rows[ri],c.rows[ri+1]]; break;
+    case 'applyall': S.cols.forEach((o,k)=>{ if(k!==ci) o.rows=clone(c.rows); }); break;
+    case 'stretch': c.rows[0].h=r1(c.rows[0].h+(M.H-M.cols[ci].H)); break;
+    case 'fill': c.rows.unshift(mkRow(r1(M.H-M.cols[ci].H-S.rh),0)); break;
+    case 'applyFmt':
+      S.cols.forEach(o=>o.rows.forEach(r=>{ r.fmt=S.fmtKey; })); break;
+    case 'applySpH':
+      S.cols.forEach(o=>o.rows.forEach(r=>{ if(r.bh>0) r.h=r1(r.bh+S.spH); })); break;
+    case 'all': {
+      const fld=b.dataset.f;
+      if(rowEl){
+        const src=c.rows[ri];
+        S.cols.forEach(o=>o.rows.forEach(r=>{
+          if(fld==='h') r.h=src.h;
+          else if(fld==='cnt') r.cnt=r.bh>0?src.cnt:null;
+          else if(fld==='bh'){ r.bh=src.bh; if(r.bh>0) r.h=r1(r.bh+S.spH); else r.cnt=null; }
+        }));
+      } else {
+        S.cols.forEach(o=>{ if(fld==='n') o.n=c.n; });
+      }
+      break; }
+    case 'csv': csv(); return;
+    case 'exportHtml': exportHtml(); return;
+    case 'exportPdf': exportPdf(); return;
+    case 'print': window.print(); return;
+    default: return;
+  }
+  renderEditor();
+});
+
+/* Einstellungen */
+const NUM_FIELDS={fa:5,fb:5,pw:.5,pd:.5,rw:.5,rh:.5,sd:.5,sh:.5,dVal:10};
+function syncSettings(){
+  $('#fmt').value=S.fmtKey;
+  ['fa','fb','pw','pd','rw','rh','sd','sh','spH','spW','dVal'].forEach(k=>$('#'+k).value=S[k]);
+  $('#dMan').checked=S.dMan; $('#unit').value=S.unit;
+}
+document.addEventListener('input',e=>{
+  const el=e.target, id=el.id; if(!id||!el.closest('#settings,.tools')) return;
+  if(id==='fmt'){
+    S.fmtKey=el.value;
+  }
+  else if(id==='dMan') S.dMan=el.checked;
+  else if(id==='unit') S.unit=el.value;
+  else {
+    const v=numOf(el); if(v==null) return;
+    if(id in NUM_FIELDS){ if(v>=NUM_FIELDS[id]){ S[id]=v; if(id==='fa'||id==='fb') renderEditor(); } }
+    else if((id==='spH'||id==='spW')&&v>=0) S[id]=v;
+  }
+  update();
+});
+
+/* Start */
+$('#presets').innerHTML=Object.keys(PRESETS).map(k=>`<button class="btn" data-preset="${k}">${k}</button>`).join('');
+S.cols=PRESETS['Mischbeispiel']();
+syncSettings();
+renderEditor();
+</script>
+</body>
+</html>
